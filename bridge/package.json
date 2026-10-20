@@ -1,0 +1,17 @@
+{
+  "name": "nightcloser-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WhatsApp linked-device bridge for the Nightcloser demo (Baileys -> closer_bot.web)",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "link": "node link.js",
+    "start": "node bridge.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "7.0.0-rc14",
+    "qrcode-terminal": "0.12.0"
+  }
+}

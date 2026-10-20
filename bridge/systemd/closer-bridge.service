@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightcloser WhatsApp linked-device bridge (Baileys -> closer-bot)
+After=closer-bot.service network-online.target
+Wants=closer-bot.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/closer-bridge
+Environment=CLOSER_TRIGGER=Nightcloser
+Environment=CLOSER_URL=http://127.0.0.1:8096/chat
+ExecStart=/usr/local/bin/node bridge.js
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

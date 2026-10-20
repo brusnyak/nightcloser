@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightcloser test endpoint (nightcloser.web, 127.0.0.1:8096)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/booking
+EnvironmentFile=%h/booking/bot.env
+Environment=CLOSER_PORT=8096
+Environment=OR_HOURLY_CAP=150
+ExecStart=/usr/bin/python3 -m nightcloser.web
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
