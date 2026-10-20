@@ -43,6 +43,17 @@ class FallbackLLM:
         raise RuntimeError("all models failed")
 
 
+def write_handoff(session_id, last_messages):
+    """Hand-over: save the last messages of this chat for the owner to read (only handed-over chats are stored)."""
+    d = os.path.expanduser(os.environ.get("CLOSER_HANDOFF_DIR", "~/closer-handoffs"))
+    os.makedirs(d, mode=0o700, exist_ok=True)
+    name = time.strftime("%Y%m%d-%H%M%S", time.gmtime()) + "-" + session_id.replace(":", "_")[-16:] + ".txt"
+    lines = ["%s: %s" % ("customer" if m["role"] == "user" else "bot", m["content"]) for m in last_messages[-20:]]
+    fd = os.open(os.path.join(d, name), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write("\n\n".join(lines) + "\n")
+
+
 def handler(closer):
     class H(BaseHTTPRequestHandler):
         def log_message(self, *a):
@@ -112,5 +123,5 @@ if __name__ == "__main__":
     fast = LLM(os.environ.get("CLOSER_MODEL", DEFAULT_MODEL), max_tokens=1200)
     fast.extra = {"reasoning": {"effort": "low"}}  # empty replies came from reasoning eating max_tokens
     closer = Closer(FallbackLLM(fast,
-                                LLM(os.environ.get("CLOSER_FALLBACK_MODEL", FALLBACK_MODEL), max_tokens=1600)))  # reasoning model: 700 gave empty content (finish=length)
+                                LLM(os.environ.get("CLOSER_FALLBACK_MODEL", FALLBACK_MODEL), max_tokens=1600)), on_handoff=write_handoff)  # reasoning model: 700 gave empty content (finish=length)
     ThreadingHTTPServer(("127.0.0.1", int(os.environ.get("CLOSER_PORT", 8096))), handler(closer)).serve_forever()

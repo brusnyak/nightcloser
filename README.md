@@ -41,3 +41,6 @@ Reply latency 1.3 to 3.9 s with the default model (a reasoning model before the 
 - Not yet tested against a live WhatsApp socket for follow-up delivery (tested with a fake clock).
 
 MIT licensed. Built by Yegor Brusnyak.
+
+## Fonts
+`site/assets/fonts/` holds self-hosted Bricolage Grotesque and Fragment Mono (SIL Open Font License).
